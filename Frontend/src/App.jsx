@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 
-const API = "http://localhost:5000";
+const API = "https://improved-space-umbrella-v6rpwx6q7w4gcxq7x-5000.app.github.dev";
 
 function App() {
   const [tasks, setTasks] = useState([]);
@@ -11,8 +11,12 @@ function App() {
   const [editId, setEditId] = useState(null);
 
   const getTasks = async () => {
-    const res = await axios.get(`${API}/api/tasks`);
-    setTasks(res.data);
+    try {
+      const res = await axios.get(`${API}/api/tasks`);
+      setTasks(res.data);
+    } catch (err) {
+      console.log("GET ERROR:", err);
+    }
   };
 
   useEffect(() => {
@@ -29,17 +33,23 @@ function App() {
 
     const task = { title, description, status };
 
-    if (editId) {
-      await axios.put(`${API}/api/tasks/${editId}`, task);
-      setEditId(null);
-    } else {
-      await axios.post(`${API}/api/tasks`, task);
-    }
+    try {
+      if (editId) {
+        await axios.put(`${API}/api/tasks/${editId}`, task);
+        setEditId(null);
+      } else {
+        await axios.post(`${API}/api/tasks`, task);
+      }
 
-    setTitle("");
-    setDescription("");
-    setStatus("Pending");
-    getTasks();
+      setTitle("");
+      setDescription("");
+      setStatus("Pending");
+      getTasks();
+      alert("Task saved successfully");
+    } catch (err) {
+      console.log("SAVE ERROR:", err);
+      alert("Error: " + err.message);
+    }
   };
 
   const editTask = (task) => {
@@ -50,8 +60,13 @@ function App() {
   };
 
   const deleteTask = async (id) => {
-    await axios.delete(`${API}/api/tasks/${id}`);
-    getTasks();
+    try {
+      await axios.delete(`${API}/api/tasks/${id}`);
+      getTasks();
+    } catch (err) {
+      console.log("DELETE ERROR:", err);
+      alert("Delete error: " + err.message);
+    }
   };
 
   return (
@@ -72,18 +87,13 @@ function App() {
           onChange={(e) => setDescription(e.target.value)}
         />
 
-        <select
-          value={status}
-          onChange={(e) => setStatus(e.target.value)}
-        >
+        <select value={status} onChange={(e) => setStatus(e.target.value)}>
           <option>Pending</option>
           <option>In Progress</option>
           <option>Completed</option>
         </select>
 
-        <button type="submit">
-          {editId ? "Update Task" : "Add Task"}
-        </button>
+        <button type="submit">{editId ? "Update Task" : "Add Task"}</button>
       </form>
 
       <hr />
