@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 
-const API = "https://improved-space-umbrella-v6rpwx6q7w4gcxq7x-5000.app.github.dev";
+const API = "https://task-traker-mern.onrender.com";
 
 function App() {
   const [tasks, setTasks] = useState([]);
